@@ -1,605 +1,1553 @@
-import React, { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Countdown from "./componentes-encabezado/encabeza-cuenta";
 
-/* =========================
-   TEMAS DEL SOBRE
-========================= */
-const envelopeThemes = {
-  luxuryGold: {
-    body: "linear-gradient(135deg, #1f1f1f, #2c2c2c 40%, #111111 100%)",
-    flap: "linear-gradient(to bottom, #3a3a3a, #1a1a1a)",
-    border: "#c8a95b",
-    seal:
-      "radial-gradient(circle at 30% 30%, #f5e6b0, #d4af37 40%, #9c7a1c 70%, #5f4a00 100%)",
-  },
+/* =====================================================
+   PALETA DE COLORES
+===================================================== */
 
-  romanticRose: {
-    body: "linear-gradient(135deg, #f3d6dc, #e7b8c2 40%, #d998a7 100%)",
-    flap: "linear-gradient(to bottom, #f0c7d1, #d998a7)",
-    border: "#c97b8d",
-    seal:
-      "radial-gradient(circle at 30% 30%, #fff0f3, #f7b2c4 40%, #d97b93 70%, #a64d67 100%)",
-  },
+const COLORS = {
+  butterBloom: "#F8E6A0",
+  goldenBatter: "#C8A15A",
+  toastedCaramel: "#A88762",
+  ivoryWhip: "#F9F6EE",
+  gardenSage: "#A8AA7D",
+};
 
-  emerald: {
-    body: "linear-gradient(135deg, #6b705c, #5a614f 40%, #4a4f40 100%)",
-    flap: "linear-gradient(to bottom, #7a8068, #5a614f)",
-    border: "#7a8068",
-    seal:
-      "radial-gradient(circle at 30% 30%, #f5e6b0, #d4af37 40%, #9c7a1c 70%, #5f4a00 100%)",
-  },
+/* =====================================================
+   TONOS PROFUNDOS DERIVADOS DE LA PALETA
+   Se usan únicamente para dar contraste a los textos.
+===================================================== */
 
-  royalBlue: {
-    body: "linear-gradient(135deg, #1e3a5f, #27496d 40%, #142850 100%)",
-    flap: "linear-gradient(to bottom, #3b5b8a, #1e3a5f)",
-    border: "#6fa3d2",
-    seal:
-      "radial-gradient(circle at 30% 30%, #dceeff, #7db9ff 40%, #3f7dcf 70%, #224c8f 100%)",
-  },
+const TONES = {
+  sageDeep: "#555B3F",
+  sageDark: "#424832",
+  caramelDeep: "#72583F",
+  caramelDark: "#58422F",
 };
 
 export default function Portada() {
   const audioRef = useRef(null);
+  const timeoutRef = useRef(null);
 
   const [introActiva, setIntroActiva] = useState(true);
   const [mostrarContenido, setMostrarContenido] = useState(false);
   const [abrirSobre, setAbrirSobre] = useState(false);
+  const [iniciando, setIniciando] = useState(false);
 
-  const [invitados, setInvitados] = useState("Invitado");
+  const [invitados, setInvitados] = useState("Invitado especial");
   const [pases, setPases] = useState(1);
 
-  /* =========================
-     TEMA ACTIVO
-  ========================= */
-  const theme = envelopeThemes.luxuryGold;
+  /* =====================================================
+     LEER DATOS DE LA URL
+  ===================================================== */
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
 
     const nombre = params.get("nombre");
-    const cantidad = params.get("pases");
+    const cantidad = Number.parseInt(params.get("pases"), 10);
 
-    if (nombre) setInvitados(nombre);
-    if (cantidad) setPases(parseInt(cantidad));
+    if (nombre?.trim()) {
+      setInvitados(nombre.trim());
+    }
+
+    if (Number.isFinite(cantidad) && cantidad > 0) {
+      setPases(cantidad);
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
-  const iniciarExperiencia = () => {
+  /* =====================================================
+     ABRIR SOBRE
+  ===================================================== */
+
+  const iniciarExperiencia = async () => {
+    if (iniciando || abrirSobre) return;
+
+    setIniciando(true);
     setAbrirSobre(true);
 
-    setTimeout(() => {
-      if (audioRef.current) {
-        audioRef.current.volume = 0.5;
-        audioRef.current.play();
+    if (audioRef.current) {
+      try {
+        audioRef.current.volume = 0.45;
+        await audioRef.current.play();
+      } catch (error) {
+        console.warn("El navegador bloqueó el audio:", error);
       }
+    }
 
-      setIntroActiva(false);
+    timeoutRef.current = setTimeout(() => {
       setMostrarContenido(true);
-    }, 1800);
+      setIntroActiva(false);
+    }, 1900);
   };
 
-  return (
-    <div className="relative w-full overflow-hidden bg-white text-[#1a1a1a]">
+  const textoLugar = pases === 1 ? "lugar" : "lugares";
 
-      {/* AUDIO */}
-      <audio ref={audioRef} loop>
-        <source src="/TylerShaw.mp3" type="audio/mpeg" />
+  return (
+    <main
+      className="relative w-full overflow-x-hidden"
+      style={{
+        backgroundColor: COLORS.ivoryWhip,
+        color: TONES.caramelDark,
+      }}
+    >
+      {/* =================================================
+          AUDIO
+      ================================================= */}
+
+      <audio ref={audioRef} loop preload="auto">
+        <source src="/musica.mp3" type="audio/mpeg" />
       </audio>
 
-      {/* INTRO */}
-      <AnimatePresence>
+      {/* =================================================
+          INTRO DEL SOBRE
+      ================================================= */}
+
+      <AnimatePresence mode="wait">
         {introActiva && (
+          <motion.section
+            key="introduccion"
+            initial={{ opacity: 1 }}
+            exit={{
+              opacity: 0,
+              scale: 1.01,
+            }}
+            transition={{
+              duration: 0.7,
+              ease: "easeInOut",
+            }}
+            className="
+              fixed
+              inset-0
+              z-50
+              overflow-x-hidden
+              overflow-y-auto
+            "
+            style={{
+              background: `
+                linear-gradient(
+                  180deg,
+                  ${COLORS.ivoryWhip} 0%,
+                  #F5F0E5 52%,
+                  #E8E4D3 100%
+                )
+              `,
+            }}
+          >
+            {/* Decoración superior izquierda */}
 
-          <motion.div
-  className="fixed inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-6 z-50 pt-16 sm:pt-24 overflow-hidden"
-  style={{
-  background: `
-    radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 20%),
-    linear-gradient(
-      145deg,
-      #3a1f1f 0%,
-      #241212 40%,
-      #120909 100%
-    )
-  `,
-}}
-  exit={{ opacity: 0 }}
->
+            <div
+              aria-hidden="true"
+              className="
+                pointer-events-none
+                absolute
+                -left-16
+                -top-16
+                h-44
+                w-44
+                rounded-full
+                opacity-40
+                blur-3xl
 
-            {/* TEXTOS PREMIUM */}
-<div className="relative mb-10 sm:mb-12">
+                sm:h-64
+                sm:w-64
+              "
+              style={{
+                backgroundColor: COLORS.butterBloom,
+              }}
+            />
 
-  {/* LÍNEA DECORATIVA */}
-  <div className="flex items-center justify-center gap-3 sm:gap-4 mb-5">
+            {/* Decoración inferior derecha */}
 
-    <div className="w-10 sm:w-14 h-[1px] bg-gradient-to-r from-transparent to-[#c8a96b]" />
+            <div
+              aria-hidden="true"
+              className="
+                pointer-events-none
+                absolute
+                -bottom-20
+                -right-20
+                h-52
+                w-52
+                rounded-full
+                opacity-20
+                blur-3xl
 
-    <p
-      className="text-[10px] sm:text-[11px] md:text-xs uppercase tracking-[0.45em] sm:tracking-[0.55em] font-light"
-      style={{
-        color: "#8b7355",
-        textShadow: "0 1px 2px rgba(255,255,255,0.4)",
-      }}
-    >
-      NUESTRA BODA
-    </p>
+                sm:h-72
+                sm:w-72
+              "
+              style={{
+                backgroundColor: COLORS.gardenSage,
+              }}
+            />
 
-    <div className="w-10 sm:w-14 h-[1px] bg-gradient-to-l from-transparent to-[#c8a96b]" />
+            {/* Líneas decorativas laterales */}
 
-  </div>
+            <div
+              aria-hidden="true"
+              className="
+                pointer-events-none
+                absolute
+                left-4
+                top-4
+                h-20
+                w-px
 
-  {/* NOMBRES */}
-  <h1
-    className="text-[42px] sm:text-[52px] md:text-[78px] leading-none font-cursiveDancing"
-    style={{
-      background: `
-        linear-gradient(
-          180deg,
-          #fffdf8 0%,
-          #f4dfb8 35%,
-          #d4af37 65%,
-          #8f6b1d 100%
-        )
-      `,
-      WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-      textShadow: `
-        0 2px 10px rgba(212,175,55,0.15),
-        0 8px 30px rgba(0,0,0,0.15)
-      `,
-      letterSpacing: "0.02em",
-    }}
-  >
-    Valeria
-  </h1>
+                sm:left-8
+                sm:top-8
+                sm:h-28
+              "
+              style={{
+                background: `
+                  linear-gradient(
+                    to bottom,
+                    ${COLORS.goldenBatter},
+                    transparent
+                  )
+                `,
+              }}
+            />
 
-  {/* AMPERSAND */}
-  <div className="flex justify-center my-1">
+            <div
+              aria-hidden="true"
+              className="
+                pointer-events-none
+                absolute
+                right-4
+                top-4
+                h-20
+                w-px
 
-    <span
-      className="text-[18px] sm:text-[22px] md:text-[28px] italic"
-      style={{
-        color: "#b08b2d",
-        textShadow: "0 2px 8px rgba(0,0,0,0.15)",
-      }}
-    >
-      &
-    </span>
+                sm:right-8
+                sm:top-8
+                sm:h-28
+              "
+              style={{
+                background: `
+                  linear-gradient(
+                    to bottom,
+                    ${COLORS.goldenBatter},
+                    transparent
+                  )
+                `,
+              }}
+            />
 
-  </div>
+            <div
+              className="
+                relative
+                z-10
+                flex
+                min-h-[100svh]
+                w-full
+                flex-col
+                items-center
+                justify-center
+                px-4
+                py-8
+                text-center
 
-  {/* SEGUNDO NOMBRE */}
-  <h1
-    className="text-[42px] sm:text-[52px] md:text-[78px] leading-none font-cursiveDancing"
-    style={{
-      background: `
-        linear-gradient(
-          180deg,
-          #fffdf8 0%,
-          #f4dfb8 35%,
-          #d4af37 65%,
-          #8f6b1d 100%
-        )
-      `,
-      WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-      textShadow: `
-        0 2px 10px rgba(212,175,55,0.15),
-        0 8px 30px rgba(0,0,0,0.15)
-      `,
-      letterSpacing: "0.02em",
-    }}
-  >
-    Alejandro
-  </h1>
+                min-[390px]:px-5
+                sm:px-8
+                sm:py-12
+                md:py-14
 
-  {/* FECHA */}
-  <div className="mt-5 sm:mt-6 flex flex-col items-center">
+                landscape:min-h-[760px]
+              "
+            >
+              {/* =========================================
+                  ENCABEZADO
+              ========================================= */}
 
-    <div className="w-20 sm:w-24 h-[1px] bg-gradient-to-r from-transparent via-[#c8a96b] to-transparent mb-4" />
+              <motion.header
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.8,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="
+                  mb-6
+                  w-full
+                  max-w-3xl
 
-    <p
-      className="text-[11px] sm:text-[13px] md:text-[14px] tracking-[0.3em] sm:tracking-[0.45em] uppercase"
-      style={{
-        color: "#7a6447",
-        textShadow: "0 1px 2px rgba(255,255,255,0.3)",
-      }}
-    >
-      11 • Junio • 2026
-    </p>
+                  sm:mb-8
+                  md:mb-9
+                "
+              >
+                <div
+                  className="
+                    mb-4
+                    flex
+                    items-center
+                    justify-center
+                    gap-3
 
-  </div>
-</div>
+                    sm:mb-5
+                    sm:gap-5
+                  "
+                >
+                  <span
+                    className="h-px w-10 sm:w-16 md:w-20"
+                    style={{
+                      background: `
+                        linear-gradient(
+                          to right,
+                          transparent,
+                          ${COLORS.goldenBatter}
+                        )
+                      `,
+                    }}
+                  />
 
-            {/* SOBRE PREMIUM */}
-<div
-  onClick={iniciarExperiencia}
-  className="relative w-[92vw] max-w-[340px] aspect-[340/240] cursor-pointer group"
-  style={{ perspective: 2200 }}
->
+                  <p
+                    className="
+                      text-[9px]
+                      font-semibold
+                      uppercase
+                      tracking-[0.34em]
 
-  {/* GLOW EXTERIOR */}
-  <div className="absolute inset-0 rounded-[28px] bg-[#d4af37]/20 blur-3xl scale-110 opacity-60" />
+                      min-[390px]:text-[10px]
+                      sm:text-[11px]
+                      sm:tracking-[0.52em]
+                    "
+                    style={{ color: TONES.caramelDeep }}
+                  >
+                    Nuestra boda
+                  </p>
 
-  {/* SOMBRA */}
-  <div className="absolute -bottom-8 sm:-bottom-10 left-1/2 -translate-x-1/2 w-[70%] h-14 sm:h-16 bg-black/25 blur-3xl rounded-full" />
+                  <span
+                    className="h-px w-10 sm:w-16 md:w-20"
+                    style={{
+                      background: `
+                        linear-gradient(
+                          to left,
+                          transparent,
+                          ${COLORS.goldenBatter}
+                        )
+                      `,
+                    }}
+                  />
+                </div>
 
-  {/* CUERPO PRINCIPAL */}
-  <div
-    className="absolute inset-0 rounded-[26px] border overflow-hidden backdrop-blur-xl"
-    style={{
-      background: `
-        linear-gradient(
-          145deg,
-          rgba(255,255,255,0.08),
-          rgba(255,255,255,0.02)
-        ),
-        ${theme.body}
-      `,
-      borderColor: "rgba(255,255,255,0.12)",
-      boxShadow: `
-        0 40px 80px rgba(0,0,0,0.45),
-        inset 0 1px 0 rgba(255,255,255,0.12),
-        inset 0 -2px 12px rgba(0,0,0,0.45)
-      `,
-    }}
-  >
+                <div className="flex flex-col items-center">
+                  <h1
+                    className="
+                      font-cursiveDancing
+                      text-[44px]
+                      leading-[0.9]
 
-    {/* TEXTURA */}
-    <div
-      className="absolute inset-0 opacity-[0.08]"
-      style={{
-        backgroundImage: `
-          repeating-linear-gradient(
-            45deg,
-            rgba(255,255,255,0.12) 0px,
-            rgba(255,255,255,0.12) 1px,
-            transparent 1px,
-            transparent 6px
-          )
-        `,
-      }}
-    />
+                      min-[390px]:text-[50px]
+                      sm:text-[64px]
+                      md:text-[78px]
+                      lg:text-[88px]
+                    "
+                    style={{
+                      color: TONES.sageDeep,
+                      textShadow: `
+                        0 3px 10px rgba(85, 91, 63, 0.12)
+                      `,
+                    }}
+                  >
+                    Moisés Orozco Pacheco
+                  </h1>
 
-    {/* BRILLO SUPERIOR */}
-    <div
-      className="absolute top-0 left-0 w-full h-24 opacity-30"
-      style={{
-        background:
-          "linear-gradient(to bottom, rgba(255,255,255,0.35), transparent)",
-      }}
-    />
+                  <span
+                    className="
+                      my-1
+                      font-serif
+                      text-lg
+                      italic
 
-    {/* REFLEJO LATERAL */}
-    <div
-      className="absolute top-0 left-0 h-full w-20 opacity-10"
-      style={{
-        background:
-          "linear-gradient(to right, rgba(255,255,255,0.6), transparent)",
-        transform: "skewX(-20deg)",
-      }}
-    />
-  </div>
+                      sm:my-2
+                      sm:text-2xl
+                      md:text-3xl
+                    "
+                    style={{ color: COLORS.goldenBatter }}
+                  >
+                    &
+                  </span>
 
-  {/* BORDE INTERNO */}
-  <div className="absolute inset-[8px] rounded-[20px] border border-white/10" />
+                  <h2
+                    className="
+                      font-cursiveDancing
+                      text-[44px]
+                      leading-[0.9]
 
-  {/* TAPA DEL SOBRE */}
-  <motion.div
-    className="absolute top-0 left-0 w-full h-1/2 origin-top z-20"
-    style={{
-      clipPath: "polygon(0 0, 50% 100%, 100% 0)",
-      background: `
-        linear-gradient(
-          to bottom,
-          rgba(255,255,255,0.18),
-          rgba(255,255,255,0.02)
-        ),
-        ${theme.flap}
-      `,
-      boxShadow: `
-        0 25px 40px rgba(0,0,0,0.4),
-        inset 0 2px 0 rgba(255,255,255,0.15)
-      `,
-    }}
-    animate={
-      abrirSobre
-        ? {
-            rotateX: -185,
-            y: -2,
-          }
-        : {
-            rotateX: 0,
-            y: 0,
-          }
-    }
-    transition={{
-      duration: 1.4,
-      ease: [0.22, 1, 0.36, 1],
-    }}
-  />
+                      min-[390px]:text-[50px]
+                      sm:text-[64px]
+                      md:text-[78px]
+                      lg:text-[88px]
+                    "
+                    style={{
+                      color: TONES.sageDeep,
+                      textShadow: `
+                        0 3px 10px rgba(85, 91, 63, 0.12)
+                      `,
+                    }}
+                  >
+                    Mariana Cruz Bonifacio
+                  </h2>
+                </div>
 
-  {/* CARTA INTERNA */}
-<motion.div
-  className="absolute left-1/2 top-[10%] -translate-x-1/2 w-[82%] h-[78%] rounded-[18px] z-10 overflow-hidden flex flex-col items-center justify-between py-5 sm:py-6 px-4"
-  style={{
-    background: `
-      linear-gradient(
-        180deg,
-        #fffdf8 0%,
-        #f5eee2 100%
-      )
-    `,
-    boxShadow: `
-      0 10px 30px rgba(0,0,0,0.18),
-      inset 0 1px 0 rgba(255,255,255,0.8)
-    `,
-  }}
-  animate={
-    abrirSobre
-      ? {
-          y: -70,
-          scale: 1.02,
-        }
-      : {
-          y: 0,
-          scale: 1,
-        }
-  }
-  transition={{
-    duration: 1.2,
-    ease: [0.22, 1, 0.36, 1],
-  }}
->
+                <div
+                  className="
+                    mx-auto
+                    mt-5
+                    h-px
+                    w-24
 
-  {/* DECORACIÓN */}
-  <div className="w-12 sm:w-16 h-[2px] bg-[#d4af37]/60 mt-1" />
+                    sm:mt-6
+                    sm:w-32
+                  "
+                  style={{
+                    background: `
+                      linear-gradient(
+                        to right,
+                        transparent,
+                        ${COLORS.goldenBatter},
+                        transparent
+                      )
+                    `,
+                  }}
+                />
 
-  {/* TEXTO SUPERIOR */}
-  <p
-    className="
-      text-center
-      text-[8px]
-      sm:text-[11px]
-      tracking-[0.25em]
-      sm:tracking-[0.4em]
-      text-[#b08b2d]
-      whitespace-nowrap
-    "
-  >
-    INVITACIÓN
-  </p>
+                <p
+                  className="
+                    mt-4
+                    text-[10px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.26em]
 
-  {/* NOMBRES */}
-  <div className="flex flex-col items-center justify-center leading-none">
+                    sm:text-xs
+                    sm:tracking-[0.42em]
+                    md:text-sm
+                  "
+                  style={{ color: TONES.caramelDeep }}
+                >
+                  13 · Marzo · 2027
+                </p>
+              </motion.header>
 
-    <h3 className="text-[20px] sm:text-[28px] font-cursiveDancing text-[#3d2d1f] text-center">
-      Valeria
-    </h3>
+              {/* =========================================
+                  SOBRE
+              ========================================= */}
 
-    <span className="text-[#b08b2d] text-[14px] sm:text-[18px] my-1">
-      &
-    </span>
+              <motion.button
+                type="button"
+                onClick={iniciarExperiencia}
+                disabled={iniciando}
+                aria-label="Abrir invitación"
+                initial={{ opacity: 0, y: 24, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{
+                  delay: 0.2,
+                  duration: 0.9,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                whileHover={
+                  abrirSobre
+                    ? undefined
+                    : {
+                        y: -4,
+                        scale: 1.01,
+                      }
+                }
+                whileTap={
+                  abrirSobre
+                    ? undefined
+                    : {
+                        scale: 0.985,
+                      }
+                }
+                className="
+                  relative
+                  block
+                  aspect-[1.43/1]
+                  w-[90vw]
+                  max-w-[350px]
+                  cursor-pointer
+                  border-0
+                  bg-transparent
+                  p-0
+                  outline-none
 
-    <h3 className="text-[20px] sm:text-[28px] font-cursiveDancing text-[#3d2d1f] text-center">
-      Alejandro
-    </h3>
+                  min-[390px]:w-[88vw]
+                  sm:max-w-[440px]
+                  md:max-w-[500px]
 
-  </div>
+                  focus-visible:ring-2
+                  focus-visible:ring-offset-4
 
-  {/* TEXTO INFERIOR */}
-  <p
-    className="
-      text-center
-      text-[8px]
-      sm:text-[11px]
-      tracking-[0.18em]
-      sm:tracking-[0.3em]
-      text-[#8b7355]
-      whitespace-nowrap
-    "
-  >
-    TOUCH TO OPEN
-  </p>
+                  disabled:cursor-default
+                "
+                style={{
+                  perspective: "1800px",
+                  WebkitTapHighlightColor: "transparent",
+                  "--tw-ring-color": COLORS.goldenBatter,
+                  "--tw-ring-offset-color": COLORS.ivoryWhip,
+                }}
+              >
+                {/* Sombra inferior */}
 
-</motion.div>
+                <motion.div
+                  aria-hidden="true"
+                  animate={
+                    abrirSobre
+                      ? {
+                          opacity: 0.15,
+                          scaleX: 0.82,
+                        }
+                      : {
+                          opacity: 0.28,
+                          scaleX: 1,
+                        }
+                  }
+                  transition={{
+                    duration: 1.1,
+                  }}
+                  className="
+                    absolute
+                    -bottom-5
+                    left-1/2
+                    h-8
+                    w-[72%]
+                    -translate-x-1/2
+                    rounded-full
+                    blur-xl
 
-  {/* SELLO */}
-  <motion.div
-    className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
-    animate={
-      abrirSobre
-        ? {
-            scale: 0.6,
-            opacity: 0,
-            y: -20,
-          }
-        : {
-            scale: 1,
-            opacity: 1,
-            y: 0,
-          }
-    }
-    transition={{ duration: 0.6 }}
-  >
-    <div className="relative w-20 h-20 sm:w-28 sm:h-28 flex items-center justify-center">
+                    sm:-bottom-7
+                    sm:h-11
+                  "
+                  style={{
+                    backgroundColor: TONES.caramelDark,
+                  }}
+                />
 
-      {/* GLOW */}
-      <div className="absolute inset-0 rounded-full bg-[#d4af37]/30 blur-2xl scale-125" />
+                {/* Carta interior */}
 
-      {/* SELLO */}
-      <div
-        className="absolute inset-0 rounded-full"
-        style={{
-          background: theme.seal,
-          boxShadow: `
-            inset 0 4px 10px rgba(255,255,255,0.6),
-            inset 0 -12px 20px rgba(0,0,0,0.45),
-            0 20px 35px rgba(0,0,0,0.45)
-          `,
-        }}
-      />
+                <motion.div
+                  className="
+                    absolute
+                    left-1/2
+                    top-[7%]
+                    z-10
+                    flex
+                    h-[80%]
+                    w-[82%]
+                    -translate-x-1/2
+                    flex-col
+                    items-center
+                    justify-between
+                    overflow-hidden
+                    rounded-[14px]
+                    px-4
+                    py-4
 
-      {/* BORDE */}
-      <div className="absolute inset-[6px] rounded-full border border-black/25" />
+                    min-[390px]:rounded-[17px]
+                    min-[390px]:px-5
+                    min-[390px]:py-5
 
-      {/* LETRA */}
-      <div
-        className="relative z-10 text-[26px] sm:text-[34px] font-serif"
-        style={{
-          color: "#6e5500",
-          textShadow: `
-            1px 1px 0 rgba(255,255,255,0.45),
-            -1px -1px 0 rgba(0,0,0,0.55),
-            0 4px 6px rgba(0,0,0,0.35)
-          `,
-        }}
-      >
-        M
-      </div>
-    </div>
-  </motion.div>
+                    sm:rounded-[20px]
+                    sm:px-7
+                    sm:py-6
+                  "
+                  style={{
+                    backgroundColor: COLORS.ivoryWhip,
+                    border: `1px solid ${COLORS.goldenBatter}`,
+                    boxShadow: `
+                      0 12px 26px rgba(88, 66, 47, 0.18),
+                      inset 0 0 0 5px rgba(248, 230, 160, 0.14)
+                    `,
+                  }}
+                  animate={
+                    abrirSobre
+                      ? {
+                          y: "-43%",
+                          scale: 1.025,
+                        }
+                      : {
+                          y: 0,
+                          scale: 1,
+                        }
+                  }
+                  transition={{
+                    duration: 1.35,
+                    delay: abrirSobre ? 0.35 : 0,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {/* Marco interior */}
 
-  {/* TEXTO */}
-  <motion.div
-    className="absolute inset-0 flex items-start justify-center pt-4 sm:pt-6 z-40"
-    animate={abrirSobre ? { opacity: 0 } : { opacity: 1 }}
-  >
-    <p className="text-white/75 tracking-[0.3em] sm:tracking-[0.45em] text-[9px] sm:text-[11px] font-light">
-      ABRIR
-    </p>
-  </motion.div>
-</div>
+                  <div
+                    aria-hidden="true"
+                    className="
+                      pointer-events-none
+                      absolute
+                      inset-[7px]
+                      rounded-[10px]
+                      border
 
-            {/* PASES */}
-<div className="mt-10 sm:mt-12 flex flex-col items-center">
+                      min-[390px]:rounded-[13px]
+                      sm:inset-[9px]
+                      sm:rounded-[15px]
+                    "
+                    style={{
+                      borderColor: "rgba(200, 161, 90, 0.4)",
+                    }}
+                  />
 
-  {/* LÍNEA SUPERIOR */}
-  <div className="w-20 sm:w-24 h-[1px] bg-gradient-to-r from-transparent via-[#c8a96b] to-transparent mb-5" />
+                  {/* Decoración superior */}
 
-  {/* TEXTO */}
-  <p
-    className="text-[10px] sm:text-[11px] md:text-xs tracking-[0.45em] sm:tracking-[0.55em] uppercase"
-    style={{
-      color: "#8b7355",
-      textShadow: "0 1px 2px rgba(255,255,255,0.35)",
-    }}
-  >
-    HEMOS RESERVADO
-  </p>
+                  <div
+                    className="
+                      relative
+                      z-10
+                      flex
+                      w-full
+                      flex-col
+                      items-center
+                    "
+                  >
+                    <span
+                      className="
+                        mb-2
+                        block
+                        h-px
+                        w-12
 
-  {/* NÚMERO */}
-  <div className="relative my-3">
+                        sm:mb-3
+                        sm:w-16
+                      "
+                      style={{ backgroundColor: COLORS.goldenBatter }}
+                    />
 
-    {/* GLOW */}
-    <div className="absolute inset-0 blur-2xl bg-[#d4af37]/20 scale-150 rounded-full" />
+                    <p
+                      className="
+                        text-[7px]
+                        font-semibold
+                        uppercase
+                        tracking-[0.28em]
 
-    <span
-      className="relative text-[46px] sm:text-[56px] md:text-[68px] leading-none font-light"
-      style={{
-        background: `
-          linear-gradient(
-            180deg,
-            #fffdf8 0%,
-            #f4dfb8 35%,
-            #d4af37 65%,
-            #8f6b1d 100%
-          )
-        `,
-        WebkitBackgroundClip: "text",
-        WebkitTextFillColor: "transparent",
-        textShadow: `
-          0 2px 10px rgba(212,175,55,0.18),
-          0 8px 24px rgba(0,0,0,0.12)
-        `,
-      }}
-    >
-      {pases}
-    </span>
+                        min-[390px]:text-[8px]
+                        sm:text-[10px]
+                        sm:tracking-[0.42em]
+                      "
+                      style={{ color: TONES.caramelDeep }}
+                    >
+                      Invitación
+                    </p>
+                  </div>
 
-  </div>
+                  {/* Nombres */}
 
-  {/* SUBTEXTO */}
-  <p
-    className="text-[10px] sm:text-[11px] md:text-xs tracking-[0.35em] sm:tracking-[0.45em] uppercase text-center"
-    style={{
-      color: "#7a6447",
-      textShadow: "0 1px 2px rgba(255,255,255,0.25)",
-    }}
-  >
-    LUGARES EN SU HONOR
-  </p>
+                  <div
+                    className="
+                      relative
+                      z-10
+                      flex
+                      flex-col
+                      items-center
+                      justify-center
+                      leading-none
+                    "
+                  >
+                    <p
+                      className="
+                        font-cursiveDancing
+                        text-[22px]
 
-  {/* LÍNEA */}
-  <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-[#c8a96b]/70 to-transparent mt-5 mb-5" />
+                        min-[390px]:text-[26px]
+                        sm:text-[35px]
+                        md:text-[39px]
+                      "
+                      style={{ color: TONES.sageDeep }}
+                    >
+                      Moisés
+                    </p>
 
-  {/* INVITADO */}
-  <div
-    className="px-4 sm:px-5 py-2 rounded-full border backdrop-blur-md max-w-[92vw]"
-    style={{
-      background: "rgba(255,255,255,0.18)",
-      borderColor: "rgba(255,255,255,0.25)",
-      boxShadow: `
-        0 8px 24px rgba(0,0,0,0.08),
-        inset 0 1px 0 rgba(255,255,255,0.25)
-      `,
-    }}
-  >
-    <p
-      className="text-[11px] sm:text-[12px] md:text-[13px] tracking-[0.12em] sm:tracking-[0.18em] text-center break-words"
-      style={{
-        color: "#6f5a40",
-      }}
-    >
-      Invitado:
-      <span
-        className="ml-2"
-        style={{
-          color: "#3d2d1f",
-          fontWeight: 600,
-        }}
-      >
-        {invitados}
-      </span>
-    </p>
-  </div>
+                    <span
+                      className="
+                        my-1
+                        font-serif
+                        text-xs
+                        italic
 
-</div>
+                        sm:text-base
+                      "
+                      style={{ color: COLORS.goldenBatter }}
+                    >
+                      &
+                    </span>
 
-          </motion.div>
+                    <p
+                      className="
+                        font-cursiveDancing
+                        text-[22px]
+
+                        min-[390px]:text-[26px]
+                        sm:text-[35px]
+                        md:text-[39px]
+                      "
+                      style={{ color: TONES.sageDeep }}
+                    >
+                      Maria
+                    </p>
+                  </div>
+
+                  {/* Texto inferior */}
+
+                  <div
+                    className="
+                      relative
+                      z-10
+                      flex
+                      w-full
+                      flex-col
+                      items-center
+                    "
+                  >
+                    <p
+                      className="
+                        text-[7px]
+                        font-semibold
+                        uppercase
+                        tracking-[0.2em]
+
+                        min-[390px]:text-[8px]
+                        sm:text-[10px]
+                        sm:tracking-[0.34em]
+                      "
+                      style={{ color: TONES.caramelDeep }}
+                    >
+                      Toca para abrir
+                    </p>
+
+                    <span
+                      className="
+                        mt-2
+                        block
+                        h-px
+                        w-12
+
+                        sm:mt-3
+                        sm:w-16
+                      "
+                      style={{ backgroundColor: COLORS.goldenBatter }}
+                    />
+                  </div>
+                </motion.div>
+
+                {/* Cuerpo del sobre */}
+
+                <div
+                  className="
+                    absolute
+                    inset-0
+                    overflow-hidden
+                    rounded-[20px]
+                    border
+
+                    min-[390px]:rounded-[24px]
+                    sm:rounded-[28px]
+                  "
+                  style={{
+                    background: `
+                      linear-gradient(
+                        135deg,
+                        #AEB08A 0%,
+                        ${COLORS.gardenSage} 48%,
+                        #92966C 100%
+                      )
+                    `,
+                    borderColor: "rgba(85, 91, 63, 0.32)",
+                    boxShadow: `
+                      0 24px 55px rgba(88, 66, 47, 0.24),
+                      inset 0 1px 0 rgba(249, 246, 238, 0.55),
+                      inset 0 -8px 18px rgba(66, 72, 50, 0.16)
+                    `,
+                  }}
+                >
+                  {/* Textura sutil */}
+
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 opacity-[0.08]"
+                    style={{
+                      backgroundImage: `
+                        repeating-linear-gradient(
+                          45deg,
+                          rgba(249, 246, 238, 0.45) 0px,
+                          rgba(249, 246, 238, 0.45) 1px,
+                          transparent 1px,
+                          transparent 7px
+                        )
+                      `,
+                    }}
+                  />
+
+                  {/* Solapa izquierda */}
+
+                  <div
+                    aria-hidden="true"
+                    className="
+                      absolute
+                      bottom-0
+                      left-0
+                      h-[76%]
+                      w-[59%]
+                    "
+                    style={{
+                      clipPath: "polygon(0 0, 100% 100%, 0 100%)",
+                      background: `
+                        linear-gradient(
+                          135deg,
+                          rgba(249, 246, 238, 0.14),
+                          rgba(85, 91, 63, 0.08)
+                        )
+                      `,
+                    }}
+                  />
+
+                  {/* Solapa derecha */}
+
+                  <div
+                    aria-hidden="true"
+                    className="
+                      absolute
+                      bottom-0
+                      right-0
+                      h-[76%]
+                      w-[59%]
+                    "
+                    style={{
+                      clipPath: "polygon(100% 0, 0 100%, 100% 100%)",
+                      background: `
+                        linear-gradient(
+                          225deg,
+                          rgba(249, 246, 238, 0.12),
+                          rgba(85, 91, 63, 0.1)
+                        )
+                      `,
+                    }}
+                  />
+
+                  {/* Borde interior */}
+
+                  <div
+                    aria-hidden="true"
+                    className="
+                      absolute
+                      inset-[7px]
+                      rounded-[15px]
+                      border
+
+                      min-[390px]:rounded-[19px]
+                      sm:inset-[9px]
+                      sm:rounded-[21px]
+                    "
+                    style={{
+                      borderColor: "rgba(249, 246, 238, 0.28)",
+                    }}
+                  />
+                </div>
+
+                {/* Tapa superior */}
+
+                <motion.div
+                  className="
+                    absolute
+                    left-0
+                    top-0
+                    z-20
+                    h-[54%]
+                    w-full
+                    origin-top
+                    rounded-t-[20px]
+
+                    min-[390px]:rounded-t-[24px]
+                    sm:rounded-t-[28px]
+                  "
+                  style={{
+                    clipPath: "polygon(0 0, 50% 100%, 100% 0)",
+                    background: `
+                      linear-gradient(
+                        145deg,
+                        #B5B792 0%,
+                        ${COLORS.gardenSage} 60%,
+                        #8E9268 100%
+                      )
+                    `,
+                    backfaceVisibility: "hidden",
+                    WebkitBackfaceVisibility: "hidden",
+                    transformStyle: "preserve-3d",
+                    boxShadow: `
+                      0 14px 24px rgba(66, 72, 50, 0.2),
+                      inset 0 1px 0 rgba(249, 246, 238, 0.45)
+                    `,
+                  }}
+                  animate={
+                    abrirSobre
+                      ? {
+                          rotateX: -178,
+                          y: -1,
+                        }
+                      : {
+                          rotateX: 0,
+                          y: 0,
+                        }
+                  }
+                  transition={{
+                    duration: 1.22,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                />
+
+                {/* Sello */}
+
+                <motion.div
+                  className="
+                    pointer-events-none
+                    absolute
+                    inset-0
+                    z-30
+                    flex
+                    items-center
+                    justify-center
+                  "
+                  animate={
+                    abrirSobre
+                      ? {
+                          opacity: 0,
+                          scale: 0.55,
+                          y: -18,
+                        }
+                      : {
+                          opacity: 1,
+                          scale: 1,
+                          y: 0,
+                        }
+                  }
+                  transition={{
+                    duration: 0.58,
+                    ease: "easeOut",
+                  }}
+                >
+                  <div
+                    className="
+                      relative
+                      flex
+                      h-[68px]
+                      w-[68px]
+                      items-center
+                      justify-center
+
+                      min-[390px]:h-[78px]
+                      min-[390px]:w-[78px]
+
+                      sm:h-[96px]
+                      sm:w-[96px]
+                    "
+                  >
+                    <div
+                      className="
+                        absolute
+                        inset-0
+                        rounded-full
+                      "
+                      style={{
+                        background: `
+                          radial-gradient(
+                            circle at 30% 25%,
+                            ${COLORS.butterBloom} 0%,
+                            ${COLORS.goldenBatter} 48%,
+                            #A77A32 100%
+                          )
+                        `,
+                        boxShadow: `
+                          inset 0 4px 8px rgba(249, 246, 238, 0.45),
+                          inset 0 -8px 14px rgba(88, 66, 47, 0.34),
+                          0 10px 22px rgba(88, 66, 47, 0.3)
+                        `,
+                      }}
+                    />
+
+                    <div
+                      className="
+                        absolute
+                        inset-[5px]
+                        rounded-full
+                        border
+
+                        sm:inset-[7px]
+                      "
+                      style={{
+                        borderColor: "rgba(249, 246, 238, 0.58)",
+                      }}
+                    />
+
+                    <div
+                      className="
+                        relative
+                        z-10
+                        font-cursiveDancing
+                        text-[25px]
+
+                        min-[390px]:text-[29px]
+                        sm:text-[36px]
+                      "
+                      style={{
+                        color: COLORS.ivoryWhip,
+                        textShadow: "0 2px 4px rgba(88, 66, 47, 0.35)",
+                      }}
+                    >
+                      M&M
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Texto ABRIR */}
+
+                <motion.div
+                  className="
+                    pointer-events-none
+                    absolute
+                    inset-x-0
+                    top-4
+                    z-40
+                    flex
+                    justify-center
+
+                    sm:top-6
+                  "
+                  animate={
+                    abrirSobre
+                      ? {
+                          opacity: 0,
+                          y: -5,
+                        }
+                      : {
+                          opacity: 1,
+                          y: 0,
+                        }
+                  }
+                  transition={{ duration: 0.3 }}
+                >
+                  <p
+                    className="
+                      text-[8px]
+                      font-semibold
+                      uppercase
+                      tracking-[0.35em]
+
+                      min-[390px]:text-[9px]
+                      sm:text-[10px]
+                      sm:tracking-[0.48em]
+                    "
+                    style={{ color: COLORS.ivoryWhip }}
+                  >
+                    Abrir
+                  </p>
+                </motion.div>
+              </motion.button>
+
+              {/* =========================================
+                  PASES
+              ========================================= */}
+
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: 0.42,
+                  duration: 0.8,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="
+                  mt-8
+                  flex
+                  w-full
+                  max-w-xl
+                  flex-col
+                  items-center
+
+                  sm:mt-10
+                  md:mt-11
+                "
+              >
+                <div
+                  className="
+                    mb-4
+                    h-px
+                    w-20
+
+                    sm:mb-5
+                    sm:w-28
+                  "
+                  style={{
+                    background: `
+                      linear-gradient(
+                        to right,
+                        transparent,
+                        ${COLORS.goldenBatter},
+                        transparent
+                      )
+                    `,
+                  }}
+                />
+
+                <p
+                  className="
+                    text-[9px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.3em]
+
+                    min-[390px]:text-[10px]
+                    sm:text-[11px]
+                    sm:tracking-[0.48em]
+                  "
+                  style={{ color: TONES.caramelDeep }}
+                >
+                  Hemos reservado
+                </p>
+
+                <span
+                  className="
+                    my-1
+                    block
+                    font-serif
+                    text-[42px]
+                    font-light
+                    leading-none
+
+                    min-[390px]:text-[48px]
+                    sm:text-[58px]
+                    md:text-[64px]
+                  "
+                  style={{ color: TONES.sageDeep }}
+                >
+                  {pases}
+                </span>
+
+                <p
+                  className="
+                    text-center
+                    text-[9px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.24em]
+
+                    min-[390px]:text-[10px]
+                    sm:text-[11px]
+                    sm:tracking-[0.4em]
+                  "
+                  style={{ color: TONES.caramelDeep }}
+                >
+                  {textoLugar} en su honor
+                </p>
+
+                <div
+                  className="
+                    my-4
+                    h-px
+                    w-14
+
+                    sm:my-5
+                    sm:w-20
+                  "
+                  style={{
+                    backgroundColor: COLORS.goldenBatter,
+                    opacity: 0.8,
+                  }}
+                />
+
+                <div
+                  className="
+                    max-w-[92vw]
+                    rounded-full
+                    border
+                    px-4
+                    py-2.5
+
+                    sm:px-6
+                    sm:py-3
+                  "
+                  style={{
+                    backgroundColor: COLORS.ivoryWhip,
+                    borderColor: "rgba(200, 161, 90, 0.65)",
+                    boxShadow: `
+                      0 6px 18px rgba(88, 66, 47, 0.08)
+                    `,
+                  }}
+                >
+                  <p
+                    className="
+                      break-words
+                      text-center
+                      text-[10px]
+                      tracking-[0.08em]
+
+                      min-[390px]:text-[11px]
+                      sm:text-xs
+                      sm:tracking-[0.14em]
+                    "
+                    style={{ color: TONES.caramelDeep }}
+                  >
+                    Invitado:
+                    <span
+                      className="ml-2 font-semibold"
+                      style={{ color: TONES.sageDeep }}
+                    >
+                      {invitados}
+                    </span>
+                  </p>
+                </div>
+
+                <motion.p
+                  animate={
+                    abrirSobre
+                      ? {
+                          opacity: 0,
+                          y: 4,
+                        }
+                      : {
+                          opacity: [0.55, 1, 0.55],
+                          y: [0, -2, 0],
+                        }
+                  }
+                  transition={
+                    abrirSobre
+                      ? {
+                          duration: 0.3,
+                        }
+                      : {
+                          duration: 2.2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }
+                  }
+                  className="
+                    mt-5
+                    text-[8px]
+                    font-medium
+                    uppercase
+                    tracking-[0.23em]
+
+                    sm:mt-6
+                    sm:text-[9px]
+                    sm:tracking-[0.32em]
+                  "
+                  style={{ color: TONES.caramelDeep }}
+                >
+                  Toca el sobre para continuar
+                </motion.p>
+              </motion.div>
+            </div>
+          </motion.section>
         )}
       </AnimatePresence>
 
-      {/* CONTENIDO */}
-      <div className="relative w-full">
+      {/* =================================================
+          PORTADA PRINCIPAL
+      ================================================= */}
+
+      <section
+        className="
+          relative
+          min-h-[100svh]
+          w-full
+          overflow-hidden
+        "
+        style={{
+          backgroundColor: TONES.sageDeep,
+        }}
+      >
+        {/* Imagen */}
 
         <motion.img
-          src="/prueba-03.jpg"
-          alt="portada"
-          className="w-full h-auto object-contain"
-          initial={{ opacity: 0 }}
-          animate={mostrarContenido ? { opacity: 1 } : { opacity: 0 }}
+          src="/portada.jpg"
+          alt="Valeria y Alejandro"
+          initial={{
+            opacity: 0,
+            scale: 1.06,
+          }}
+          animate={
+            mostrarContenido
+              ? {
+                  opacity: 1,
+                  scale: 1,
+                }
+              : {
+                  opacity: 0,
+                  scale: 1.06,
+                }
+          }
+          transition={{
+            opacity: {
+              duration: 1.1,
+              ease: "easeOut",
+            },
+            scale: {
+              duration: 2,
+              ease: [0.22, 1, 0.36, 1],
+            },
+          }}
+          className="
+  absolute
+  inset-0
+  h-full
+  w-full
+  object-cover
+
+  object-center
+
+  md:object-[center_35%]
+  lg:object-[center_30%]
+"
         />
 
-        <motion.div
-          className="absolute inset-0 bg-black/30"
-          initial={{ opacity: 0 }}
-          animate={mostrarContenido ? { opacity: 1 } : { opacity: 0 }}
-        />
+        {/* Gradiente suave para legibilidad.
+            No es una tarjeta y no tiene desenfoque. */}
 
         <motion.div
-          className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 text-white"
           initial={{ opacity: 0 }}
-          animate={mostrarContenido ? { opacity: 1 } : { opacity: 0 }}
+          animate={{
+            opacity: mostrarContenido ? 1 : 0,
+          }}
+          transition={{
+            duration: 1,
+          }}
+          className="absolute inset-0"
+          style={{
+            background: `
+              linear-gradient(
+                180deg,
+                rgba(66, 72, 50, 0.14) 0%,
+                rgba(66, 72, 50, 0.02) 35%,
+                rgba(66, 72, 50, 0.16) 58%,
+                rgba(66, 72, 50, 0.64) 100%
+              )
+            `,
+          }}
+        />
+
+        {/* Contenido sin tarjeta transparente */}
+
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 30,
+          }}
+          animate={
+            mostrarContenido
+              ? {
+                  opacity: 1,
+                  y: 0,
+                }
+              : {
+                  opacity: 0,
+                  y: 30,
+                }
+          }
+          transition={{
+            duration: 1,
+            delay: 0.3,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="
+            relative
+            z-10
+            flex
+            min-h-[100svh]
+            w-full
+            flex-col
+            items-center
+            justify-end
+            px-5
+            pb-12
+            pt-24
+            text-center
+
+            sm:px-8
+            sm:pb-16
+
+            md:justify-center
+            md:px-12
+            md:pb-12
+
+            lg:px-20
+          "
         >
-          <h1 className="text-4xl md:text-7xl font-cursiveDancing">
-            Valeria & Alejandro
-          </h1>
+          <div className="w-full max-w-4xl">
+            {/* Frase */}
 
-          <Countdown targetDate="2027-06-11T00:00:00" />
+            <div
+              className="
+                mb-5
+                flex
+                items-center
+                justify-center
+                gap-3
+
+                sm:mb-6
+                sm:gap-5
+              "
+            >
+              <span
+                className="h-px w-8 sm:w-16"
+                style={{
+                  background: `
+                    linear-gradient(
+                      to right,
+                      transparent,
+                      ${COLORS.butterBloom}
+                    )
+                  `,
+                }}
+              />
+
+
+              <span
+                className="h-px w-8 sm:w-16"
+                style={{
+                  background: `
+                    linear-gradient(
+                      to left,
+                      transparent,
+                      ${COLORS.butterBloom}
+                    )
+                  `,
+                }}
+              />
+            </div>
+
+            {/* Nombres */}
+
+            <h1
+              className="
+                font-cursiveDancing
+                text-[50px]
+                leading-[0.9]
+
+                min-[390px]:text-[58px]
+                sm:text-[80px]
+                md:text-[96px]
+                lg:text-[108px]
+              "
+              style={{
+                color: COLORS.ivoryWhip,
+                textShadow: `
+                  0 3px 5px rgba(66, 72, 50, 0.8),
+                  0 8px 26px rgba(66, 72, 50, 0.5)
+                `,
+              }}
+            >
+              Moisés
+            </h1>
+
+            <span
+              className="
+                my-1
+                block
+                font-serif
+                text-xl
+                italic
+
+                sm:my-2
+                sm:text-3xl
+              "
+              style={{
+                color: COLORS.butterBloom,
+                textShadow: `
+                  0 2px 8px rgba(66, 72, 50, 0.75)
+                `,
+              }}
+            >
+              &
+            </span>
+
+            <h2
+              className="
+                font-cursiveDancing
+                text-[50px]
+                leading-[0.9]
+
+                min-[390px]:text-[58px]
+                sm:text-[80px]
+                md:text-[96px]
+                lg:text-[108px]
+              "
+              style={{
+                color: COLORS.ivoryWhip,
+                textShadow: `
+                  0 3px 5px rgba(66, 72, 50, 0.8),
+                  0 8px 26px rgba(66, 72, 50, 0.5)
+                `,
+              }}
+            >
+              Mariana
+            </h2>
+
+            {/* Fecha */}
+
+            <div
+              className="
+                mx-auto
+                my-6
+                h-px
+                w-24
+
+                sm:my-7
+                sm:w-40
+              "
+              style={{
+                background: `
+                  linear-gradient(
+                    to right,
+                    transparent,
+                    ${COLORS.butterBloom},
+                    transparent
+                  )
+                `,
+              }}
+            />
+
+            <p
+              className="
+                mb-5
+                text-[10px]
+                font-semibold
+                uppercase
+                tracking-[0.27em]
+
+                sm:text-xs
+                sm:tracking-[0.46em]
+                md:text-sm
+              "
+              style={{
+                color: COLORS.ivoryWhip,
+                textShadow: `
+                  0 2px 8px rgba(66, 72, 50, 0.85)
+                `,
+              }}
+            >
+              13 · Marzo · 2027
+            </p>
+
+            {/* Contador */}
+
+            <Countdown targetDate="2027-03-13T00:00:00" />
+          </div>
         </motion.div>
-
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
