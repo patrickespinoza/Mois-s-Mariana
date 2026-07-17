@@ -520,8 +520,6 @@ export default function AvisoAsistencia() {
 
             sm:rounded-[34px]
 
-            md:grid
-            md:grid-cols-[1.12fr_0.88fr]
 
             lg:rounded-[40px]
           "
@@ -556,52 +554,7 @@ export default function AvisoAsistencia() {
                 )
               `,
             }}
-          />
-{/* =================================================
-    IMAGEN
-================================================= */}
-
-<div
-  className="
-    relative
-    flex
-    items-center
-    justify-center
-    overflow-hidden
-
-    h-[620px]
-
-    sm:h-[560px]
-
-    md:h-auto
-    md:min-h-[720px]
-    lg:min-h-[860px]
-  "
->
-
-  {/* Imagen */}
-
-  <img
-    src="/Paleta.png"
-    alt="Novios"
-    className="
-      absolute
-      inset-0
-      h-full
-      w-full
-      object-cover
-      transition
-      duration-700
-      hover:scale-[1.02]
-    "
-    style={{
-      objectPosition: "center center",
-    }}
-  />
-
-
-</div>
-            
+          />            
 
           {/* =================================================
               FECHA LÍMITE

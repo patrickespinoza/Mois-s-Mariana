@@ -65,10 +65,10 @@ export default function PaginaPrincipal() {
 
 <ImagenSeparacion/>
 
-<AvisoAsistencia/>
 
 <Confirmacion/>
 
+<AvisoAsistencia/>
 
    </div>      
   );

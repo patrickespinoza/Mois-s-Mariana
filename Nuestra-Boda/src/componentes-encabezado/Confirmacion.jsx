@@ -880,18 +880,18 @@ export default function Confirmacion() {
               mx-auto
               mt-5
               max-w-xl
-              text-[13px]
+              text-[16px]
               leading-relaxed
 
-              sm:text-[15px]
+              sm:text-[18px]
               sm:leading-7
             "
             style={{
               color: TONES.caramelDeep,
             }}
           >
-            Por eso la invitación es válida únicamente para las personas mencionadas, 
-            por favor confirmar tu asistencia
+            La invitación es válida únicamente para las personas mencionadas. 
+            
           </p>
         </motion.header>
 
