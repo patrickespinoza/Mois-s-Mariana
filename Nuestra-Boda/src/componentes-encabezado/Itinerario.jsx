@@ -66,12 +66,6 @@ const events = [
     icon: UtensilsCrossed,
   },
   {
-    time: "16:30",
-    title: "Brindis",
-    description: "Levantaremos nuestras copas para celebrar el amor, la familia y los nuevos comienzos.",
-    icon: GlassWater,
-  },
-  {
     time: "18:00",
     title: "Baile",
     description: "Es momento de llenar la pista de alegría y crear recuerdos inolvidables juntos.",

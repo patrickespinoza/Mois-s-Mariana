@@ -557,197 +557,51 @@ export default function AvisoAsistencia() {
               `,
             }}
           />
+{/* =================================================
+    IMAGEN
+================================================= */}
 
-          {/* =================================================
-              MENSAJE
-          ================================================= */}
+<div
+  className="
+    relative
+    flex
+    items-center
+    justify-center
+    overflow-hidden
 
-          <div
-            className="
-              relative
-              flex
-              flex-col
-              justify-center
-              px-6
-              py-14
+    h-[620px]
 
-              min-[390px]:px-7
+    sm:h-[560px]
 
-              sm:px-12
-              sm:py-16
+    md:h-auto
+    md:min-h-[720px]
+    lg:min-h-[860px]
+  "
+>
 
-              md:min-h-[540px]
-              md:px-14
-              md:py-20
+  {/* Imagen */}
 
-              lg:px-20
-            "
-          >
-            {/* Número decorativo */}
+  <img
+    src="/Paleta.png"
+    alt="Novios"
+    className="
+      absolute
+      inset-0
+      h-full
+      w-full
+      object-cover
+      transition
+      duration-700
+      hover:scale-[1.02]
+    "
+    style={{
+      objectPosition: "center center",
+    }}
+  />
 
-            <div
-              aria-hidden="true"
-              className="
-                pointer-events-none
-                absolute
-                -left-3
-                top-4
-                font-serif
-                text-[150px]
-                leading-none
 
-                sm:text-[190px]
-              "
-              style={{
-                color: "rgba(168, 170, 125, 0.09)",
-              }}
-            >
-              “
-            </div>
-
-            <div className="relative z-10">
-              <div
-                className="
-                  mb-7
-                  flex
-                  h-14
-                  w-14
-                  items-center
-                  justify-center
-                  rounded-full
-                  border
-
-                  sm:h-16
-                  sm:w-16
-                "
-                style={{
-                  backgroundColor: "rgba(248, 230, 160, 0.26)",
-                  borderColor: "rgba(200, 161, 90, 0.48)",
-                }}
-              >
-                <Users
-                  aria-hidden="true"
-                  strokeWidth={1.4}
-                  className="
-                    h-6
-                    w-6
-
-                    sm:h-7
-                    sm:w-7
-                  "
-                  style={{
-                    color: TONES.sageDeep,
-                  }}
-                />
-              </div>
-
-              <p
-                className="
-                  text-[10px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.34em]
-
-                  sm:text-[11px]
-                  sm:tracking-[0.44em]
-                "
-                style={{
-                  color: COLORS.goldenBatter,
-                }}
-              >
-                Con mucho cariño
-              </p>
-
-              <h3
-                className="
-                  mt-4
-                  font-serif
-                  text-[30px]
-                  font-normal
-                  leading-tight
-
-                  min-[390px]:text-[34px]
-
-                  sm:text-[42px]
-                  md:text-[44px]
-                  lg:text-[48px]
-                "
-                style={{
-                  color: TONES.sageDeep,
-                }}
-              >
-                Queremos compartir este día con ustedes
-              </h3>
-
-              <p
-                className="
-                  mt-6
-                  text-[14px]
-                  leading-7
-
-                  sm:text-[16px]
-                  sm:leading-8
-                "
-                style={{
-                  color: TONES.caramelDeep,
-                }}
-              >
-               Por eso la invitación es válida únicamente para las personas mencionadas, 
-               por favor confirmar tu asistencia
-              </p>
-
-              {/* Aviso de invitados */}
-
-              <div
-                className="
-                  mt-8
-                  flex
-                  items-start
-                  gap-4
-                  rounded-[20px]
-                  border
-                  px-5
-                  py-5
-
-                  sm:gap-5
-                  sm:px-6
-                "
-                style={{
-                  backgroundColor: "rgba(248, 230, 160, 0.18)",
-                  borderColor: "rgba(200, 161, 90, 0.34)",
-                }}
-              >
-                <CheckCircle2
-                  aria-hidden="true"
-                  strokeWidth={1.5}
-                  className="
-                    mt-0.5
-                    h-5
-                    w-5
-                    shrink-0
-                  "
-                  style={{
-                    color: TONES.sageDeep,
-                  }}
-                />
-
-                <p
-                  className="
-                    text-[12px]
-                    leading-6
-
-                    sm:text-[13px]
-                  "
-                  style={{
-                    color: TONES.caramelDeep,
-                  }}
-                >
-                  El número de lugares disponibles corresponde a las personas
-                  indicadas en esta invitación.
-                </p>
-              </div>
-            </div>
-          </div>
+</div>
+            
 
           {/* =================================================
               FECHA LÍMITE

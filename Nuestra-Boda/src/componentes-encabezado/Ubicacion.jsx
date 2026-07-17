@@ -422,6 +422,7 @@ export default function EventoDireccion() {
             />
 
             <p
+             translate="no"
               className="
                 text-[9px]
                 font-semibold
@@ -460,6 +461,7 @@ export default function EventoDireccion() {
           </div>
 
           <h2
+          translate="no"
             className="
               font-cursiveDancing
               text-[46px]
@@ -482,6 +484,7 @@ export default function EventoDireccion() {
           </h2>
 
           <p
+          translate="no"
             className="
               mx-auto
               mt-5
@@ -838,6 +841,7 @@ export default function EventoDireccion() {
               />
 
               <span
+              translate="no"
                 className="
                   text-[9px]
                   font-semibold
@@ -973,6 +977,7 @@ export default function EventoDireccion() {
                 </p>
 
                 <p
+                translate="no"
                   className="
                     mt-1
                     font-serif

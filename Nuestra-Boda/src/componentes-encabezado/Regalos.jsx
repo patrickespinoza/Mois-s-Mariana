@@ -119,6 +119,9 @@ const Regalos = () => {
 
   const linkLiverpool = `https://mesaderegalos.liverpool.com.mx/milistaderegalos/60011883`;
 
+  const linkAmazon =
+  "https://www.amazon.com.mx/wedding/guest-view/12AV1OCBJ7FZX";
+
   /* Evita el desplazamiento cuando el modal está abierto */
 
   useEffect(() => {
@@ -1004,8 +1007,8 @@ const Regalos = () => {
                 >
                   Tu presencia es nuestro mejor regalo,
                   pero si deseas tener un detalle con
-                  nosotros, hemos creado una mesa de regalos
-                  en Liverpool.
+                  nosotros, hemos preparado una selección
+                  de regalos tanto en Liverpool como en Amazon.
                 </p>
 
                 <div
@@ -1139,7 +1142,7 @@ const Regalos = () => {
                       color: COLORS.ivoryWhip,
                     }}
                   >
-                    Ver mesa de regalos
+                    Ver opciones de regalo
                   </span>
                 </motion.button>
               </div>
@@ -1267,7 +1270,7 @@ const Regalos = () => {
               }}
               role="dialog"
               aria-modal="true"
-              aria-label="Mesa de regalos Liverpool"
+              aria-label="Mesa de regalos"
               className="
                 relative
                 my-auto
@@ -1620,7 +1623,7 @@ const Regalos = () => {
                         sm:text-[11px]
                       "
                     >
-                      Ver mesa de regalos
+                      Ver mesa de regalos Liverpool
                     </span>
 
                     <ExternalLink
@@ -1631,6 +1634,67 @@ const Regalos = () => {
                       }}
                     />
                   </motion.a>
+
+                  <motion.a
+  href={linkAmazon}
+  target="_blank"
+  rel="noopener noreferrer"
+  whileHover={{
+    y: -3,
+    scale: 1.01,
+  }}
+  whileTap={{
+    scale: 0.98,
+  }}
+  className="
+    mt-4
+    flex
+    min-h-[56px]
+    w-full
+    items-center
+    justify-center
+    gap-3
+    rounded-full
+    border
+    px-6
+    py-4
+  "
+  style={{
+    background: `
+      linear-gradient(
+        135deg,
+        ${COLORS.goldenBatter} 0%,
+        ${COLORS.toastedCaramel} 100%
+      )
+    `,
+    borderColor: "rgba(200,161,90,.5)",
+    color: COLORS.ivoryWhip,
+    boxShadow: `
+      0 14px 28px rgba(168,135,98,.20)
+    `,
+  }}
+>
+  <span
+    className="
+      text-[10px]
+      font-semibold
+      uppercase
+      tracking-[0.24em]
+
+      sm:text-[11px]
+    "
+  >
+    Ver lista de Amazon
+  </span>
+
+  <ExternalLink
+    size={16}
+    strokeWidth={1.5}
+    style={{
+      color: COLORS.ivoryWhip,
+    }}
+  />
+</motion.a>
 
                   <p
                     className="

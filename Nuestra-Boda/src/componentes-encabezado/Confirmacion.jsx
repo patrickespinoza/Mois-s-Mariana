@@ -890,9 +890,8 @@ export default function Confirmacion() {
               color: TONES.caramelDeep,
             }}
           >
-            Será un honor compartir este momento contigo.
-            Ayúdanos a preparar cada detalle confirmando
-            tu asistencia.
+            Por eso la invitación es válida únicamente para las personas mencionadas, 
+            por favor confirmar tu asistencia
           </p>
         </motion.header>
 
