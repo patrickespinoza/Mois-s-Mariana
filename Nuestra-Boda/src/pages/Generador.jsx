@@ -54,6 +54,61 @@ const fadeUp = {
 };
 
 /* =====================================================
+   CODIFICAR DATOS DE LA INVITACIÓN
+===================================================== */
+
+/*
+  El enlace final tendrá este formato:
+
+  /?id=eyJ...
+
+  El nombre y los pases ya no aparecerán directamente
+  en la URL.
+
+  Nota:
+  Esto oculta los datos de forma práctica, pero no es
+  cifrado criptográfico de alta seguridad.
+*/
+const codificarInvitacion = (datos) => {
+  const json = JSON.stringify(datos);
+
+  /*
+    Invertimos el texto para conservar compatibilidad
+    con el lector del componente Confirmacion.
+  */
+  const textoInvertido = json
+    .split("")
+    .reverse()
+    .join("");
+
+  /*
+    Convertimos correctamente caracteres como:
+    á, é, í, ó, ú, ñ y emojis.
+  */
+  const bytes = new TextEncoder().encode(
+    textoInvertido
+  );
+
+  let textoBinario = "";
+
+  bytes.forEach((byte) => {
+    textoBinario += String.fromCharCode(byte);
+  });
+
+  /*
+    Base64 URL-safe:
+    + se convierte en -
+    / se convierte en _
+    = se elimina
+  */
+  return window
+    .btoa(textoBinario)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+};
+
+/* =====================================================
    COMPONENTE
 ===================================================== */
 
@@ -124,14 +179,18 @@ ${enlace}`;
     setCopiado(false);
     setMensajeCopiado(false);
 
-    const parametros = new URLSearchParams({
+    const datosInvitacion = {
       nombre: nombreLimpio,
-      pases: String(Math.floor(pasesConvertidos)),
-    });
+      pases: Math.floor(pasesConvertidos),
+    };
+
+    const idEncriptado = codificarInvitacion(
+      datosInvitacion
+    );
 
     const url = `${
       window.location.origin
-    }/?${parametros.toString()}`;
+    }/?id=${encodeURIComponent(idEncriptado)}`;
 
     setLink(url);
 

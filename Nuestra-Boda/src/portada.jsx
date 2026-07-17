@@ -39,30 +39,115 @@ export default function Portada() {
   const [pases, setPases] = useState(1);
 
   /* =====================================================
-     LEER DATOS DE LA URL
-  ===================================================== */
+   DECODIFICAR INVITACIÓN
+===================================================== */
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+const decodificarInvitacion = (id) => {
+  try {
+    // Base64 URL Safe → Base64 normal
+    const base64 = id
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+
+    const binario = window.atob(base64);
+
+    const bytes = Uint8Array.from(
+      binario,
+      (c) => c.charCodeAt(0)
+    );
+
+    const textoInvertido =
+      new TextDecoder().decode(bytes);
+
+    const json = textoInvertido
+      .split("")
+      .reverse()
+      .join("");
+
+    return JSON.parse(json);
+
+  } catch (error) {
+    console.error(
+      "No fue posible leer la invitación:",
+      error
+    );
+
+    return null;
+  }
+};
+
+/* =====================================================
+   LEER DATOS DE LA URL
+===================================================== */
+
+useEffect(() => {
+  const params = new URLSearchParams(
+    window.location.search
+  );
+
+  /*
+    --------------------------------------------
+    NUEVO FORMATO
+    /?id=xxxxxxxx
+    --------------------------------------------
+  */
+
+  const id = params.get("id");
+
+  if (id) {
+    const datos =
+      decodificarInvitacion(id);
+
+    if (datos) {
+      if (datos.nombre) {
+        setInvitados(datos.nombre);
+      }
+
+      if (
+        Number.isFinite(Number(datos.pases))
+      ) {
+        setPases(Number(datos.pases));
+      }
+    }
+  }
+
+  /*
+    --------------------------------------------
+    FORMATO ANTIGUO
+    /?nombre=&pases=
+    (compatibilidad)
+    --------------------------------------------
+  */
+
+  else {
 
     const nombre = params.get("nombre");
-    const cantidad = Number.parseInt(params.get("pases"), 10);
+
+    const cantidad =
+      Number.parseInt(
+        params.get("pases"),
+        10
+      );
 
     if (nombre?.trim()) {
       setInvitados(nombre.trim());
     }
 
-    if (Number.isFinite(cantidad) && cantidad > 0) {
+    if (
+      Number.isFinite(cantidad) &&
+      cantidad > 0
+    ) {
       setPases(cantidad);
     }
+  }
 
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
+  return () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  };
 
+}, []);
   /* =====================================================
      ABRIR SOBRE
   ===================================================== */
@@ -698,7 +783,7 @@ export default function Portada() {
                       "
                       style={{ color: TONES.sageDeep }}
                     >
-                      Maria
+                      Mariana
                     </p>
                   </div>
 
