@@ -5,12 +5,11 @@ import {
   Wine,
   Heart,
   Soup,
-  UtensilsCrossed,
-  GlassWater,
   Music2,
   MoonStar,
   Clock3,
   Sparkles,
+  CakeSlice,
 } from "lucide-react";
 
 /* =====================================================
