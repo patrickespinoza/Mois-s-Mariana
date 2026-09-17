@@ -989,7 +989,7 @@ export default function EventoDireccion() {
                     color: TONES.sageDeep,
                   }}
                 >
-                  12:00 hrs
+                  11:30 hrs
                 </p>
               </div>
             </div>
@@ -1066,7 +1066,7 @@ export default function EventoDireccion() {
                     color: TONES.caramelDeep,
                   }}
                 >
-                  Tezoyuca, Estado de México
+                  Andador Entú 8, Barrio Endónica, 54570 Jilotzingo, Méx.
                 </p>
               </div>
             </div>
@@ -1074,7 +1074,7 @@ export default function EventoDireccion() {
             {/* Botón */}
 
             <motion.a
-              href="https://maps.app.goo.gl/vPbvkA7ZH6CAQAkw8"
+              href="https://maps.app.goo.gl/gj559agUDfPQogFE8"
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{

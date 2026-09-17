@@ -42,39 +42,52 @@ const TONES = {
 
 const events = [
   {
-    time: "12:00",
+    time: "11:30",
     title: "Recepción",
-    description: "Comenzamos este gran día recibiendo con alegría a cada uno de nuestros invitados.",
+    description:
+      "Recibiremos con mucha alegría a cada uno de nuestros invitados para dar inicio a este día tan especial.",
     icon: Wine,
   },
   {
-    time: "12:30",
+    time: "12:00",
     title: "Ceremonia",
-    description: "Uniremos nuestras vidas en una ceremonia llena de amor, fe y emociones inolvidables.",
+    description:
+      "Uniremos nuestras vidas en una ceremonia llena de amor, fe y momentos inolvidables.",
     icon: Heart,
   },
   {
     time: "14:00",
-    title: "Aperitivos",
-    description: "Disfruta de un delicioso aperitivo mientras compartimos los primeros momentos de la celebración.",
+    title: "Comida",
+    description:
+      "Compartiremos una deliciosa comida para celebrar juntos el comienzo de nuestra nueva historia.",
     icon: Soup,
   },
   {
     time: "15:00",
-    title: "Comida",
-    description: "Compartiremos una exquisita comida preparada especialmente para celebrar este día tan importante.",
-    icon: UtensilsCrossed,
-  },
-  {
-    time: "18:00",
-    title: "Baile",
-    description: "Es momento de llenar la pista de alegría y crear recuerdos inolvidables juntos.",
+    title: "Dinámicas",
+    description:
+      "Disfrutaremos actividades especiales, risas y momentos divertidos junto a nuestros invitados.",
     icon: Music2,
   },
   {
-    time: "22:30",
-    title: "Finaliza",
-    description: "Gracias por acompañarnos y ser parte de uno de los días más importantes de nuestras vidas.",
+    time: "17:00",
+    title: "Baile",
+    description:
+      "Abriremos la pista para celebrar, bailar y crear recuerdos inolvidables juntos.",
+    icon: Music2,
+  },
+  {
+    time: "18:00",
+    title: "Pastel",
+    description:
+      "Compartiremos el tradicional corte del pastel y un dulce momento con todos nuestros invitados.",
+    icon: CakeSlice,
+  },
+  {
+    time: "21:00",
+    title: "Despedida",
+    description:
+      "Cerraremos este día agradeciendo de corazón que hayan formado parte de nuestra celebración.",
     icon: MoonStar,
   },
 ];
